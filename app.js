@@ -1,5 +1,6 @@
 import express from 'express'
 import 'dotenv/config'
+import { LoggerMiddleware } from './middlewares/logger.js'
 import users from './users.json' with {type:"json"}
 
 const app = express()
@@ -9,12 +10,8 @@ const PORT = process.env.PORT ?? 8000
 
 app.use(express.json())
 app.use(express.urlencoded({extended:true}))
+app.use(LoggerMiddleware())
 
-app.use((req,res,next)=>{
-    const timeString = new Date().toLocaleDateString()
-    console.log(`[${timeString}] ${req.method} ${req.url}`)
-    next()
-})
 
 
 app.get('/',(req,res)=>{
@@ -70,7 +67,40 @@ app.put('/users/:id',(req,res)=>{
     user.email = email
     return res.status(201).json(user)
 })
+app.patch('/users/:id',(req,res)=>{
+    const {id} = req.params
+    const update_fields = ["name", "email"] 
 
+    const index = users.findIndex(user => user.id === id)
+
+    if(index === -1){
+        return res.status(404).json({Error:"User not find"})
+    }
+
+    const update_user = Object.keys(req.body)
+
+    update_user.forEach(e=>{
+        if(update_fields.includes(e)){
+
+            users[index][e] = req.body[e]
+        }
+    })
+
+    return res.status(201).json(users[index])
+
+})
+app.delete('/users/:id',(req,res)=>{
+    const {id} = req.params
+
+    const user = users.findIndex(user => user.id === id)
+
+    if(user === -1){
+        return res.status(404).json({Message:"User not found"})
+    }
+    users.splice(user,1)
+    return res.status(204).json({message:"No content"})
+
+})
 app.post('/api/data',(req,res)=>{
     const data = req.body;
     if(!data){
