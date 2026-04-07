@@ -1,6 +1,7 @@
 import express from 'express'
 import 'dotenv/config'
 import { LoggerMiddleware } from './middlewares/logger.js'
+import { ErrorHandler } from './middlewares/errorHandler.js'
 import users from './users.json' with {type:"json"}
 
 const app = express()
@@ -120,6 +121,12 @@ app.get('/healt',(req,res)=>{
     })
 })
 
+//Este endpoint no debe ur a produccion
+app.get('/error',(req,res,next)=>{
+    next(new Error('Intencional error'))
+})
+
+app.use(ErrorHandler)
 
 
 app.listen(PORT,()=>{
