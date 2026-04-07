@@ -10,7 +10,7 @@ const PORT = process.env.PORT ?? 8000
 
 app.use(express.json())
 app.use(express.urlencoded({extended:true}))
-app.use(LoggerMiddleware())
+app.use(LoggerMiddleware)
 
 
 
