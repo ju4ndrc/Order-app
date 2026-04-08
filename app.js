@@ -3,9 +3,10 @@ import 'dotenv/config'
 import { LoggerMiddleware } from './middlewares/logger.js'
 import { ErrorHandler } from './middlewares/errorHandler.js'
 import users from './users.json' with {type:"json"}
+import { PrismaClient } from '@prisma/client/extension'
 
 const app = express()
-
+const prisma = new PrismaClient()
 const PORT = process.env.PORT ?? 8000
 
 
